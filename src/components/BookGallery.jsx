@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Container, Row, Col, Form, FormControl, InputGroup, DropdownButton, Dropdown } from 'react-bootstrap';
 import BookCard from './BookCard';
 import booksDataFantasy from '../books/fantasy.json';
 import booksDataHistory from '../books/history.json';
@@ -7,6 +8,12 @@ import booksDataRomance from '../books/romance.json';
 import booksDataSciFi from '../books/scifi.json';
 
 function BookGallery() {
+  const [selectedBook, setSelectedBook] = useState(null);
+
+  const handleSelectBook = book => {
+    setSelectedBook(book);
+  };
+
   const [category, setCategory] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredBooks, setFilteredBooks] = useState([]);
@@ -52,45 +59,40 @@ function BookGallery() {
   }, [category, searchTerm]);
 
   return (
-    <div className="container">
-      <div className="row mb-3">
-        <div className="col">
-          <select
-            className="form-select"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-          >
+    <Container>
+      <Row className="mb-3">
+        <Col>
+          <Form.Select value={category} onChange={(e) => setCategory(e.target.value)}>
             <option value="all">All Categories</option>
             <option value="fantasy">Fantasy</option>
             <option value="history">History</option>
             <option value="horror">Horror</option>
             <option value="romance">Romance</option>
             <option value="sci-fi">Sci-Fi</option>
-          </select>
-        </div>
-        <div className="col">
-          <input
+          </Form.Select>
+        </Col>
+        <Col>
+          <FormControl
             type="text"
-            className="form-control"
             placeholder="Search by title..."
             onChange={(e) => setSearchTerm(e.target.value)}
             value={searchTerm}
           />
-        </div>
-      </div>
-      <div className="row">
-      {filteredBooks.length > 0 ? filteredBooks.map((book, index) => (
-  <div className="col-sm-6 col-md-4 col-lg-3" key={`${book.asin}-${category}-${index}`}>
-    <BookCard book={book} />
-  </div>
-)) : (
-  <div className="col">
-    <p>No books found.</p>
-  </div>
-)}
+        </Col>
+      </Row>
+      <Row>
+        {filteredBooks.length > 0 ? filteredBooks.map((book, index) => (
+          <Col sm={6} md={4} lg={3} key={`${book.asin}-${category}-${index}`}>
+            <BookCard book={book} onClick={handleSelectBook}
+              isSelected={selectedBook && book.asin === selectedBook.asin}/>
+          </Col>
+        )) : (
+          <Col>
+            <p>No books found.</p>
+          </Col>
         )}
-      </div>
-    </div>
+      </Row>
+    </Container>
   );
 }
 
